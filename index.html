@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Weirdo Pricing Calculator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;padding:0;}
+
+:root{
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f0efe9;
+  --color-background-tertiary:#f5f4f0;
+  --color-text-primary:#1a1a18;
+  --color-text-secondary:#6b6b67;
+  --color-text-tertiary:#9b9b96;
+  --color-text-danger:#a32d2d;
+  --color-text-success:#3b6d11;
+  --color-border-tertiary:rgba(0,0,0,0.12);
+  --color-border-secondary:rgba(0,0,0,0.22);
+  --color-border-primary:rgba(0,0,0,0.35);
+  --color-border-danger:rgba(163,45,45,0.5);
+  --border-radius-md:8px;
+  --border-radius-lg:12px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --color-background-primary:#1e1e1c;
+    --color-background-secondary:#2a2a27;
+    --color-background-tertiary:#141412;
+    --color-text-primary:#f0efe9;
+    --color-text-secondary:#9b9b96;
+    --color-text-tertiary:#6b6b67;
+    --color-text-danger:#f09595;
+    --color-text-success:#97c459;
+    --color-border-tertiary:rgba(255,255,255,0.12);
+    --color-border-secondary:rgba(255,255,255,0.22);
+    --color-border-primary:rgba(255,255,255,0.35);
+  }
+}
+
+.outer{max-width:780px;margin:0 auto;padding:0 1.5rem 3rem;}
+
+.sticky-top{background:var(--color-background-tertiary);padding:1rem 0 0.75rem;}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.met{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:14px 16px;}
+.ml{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
+.mv{font-size:20px;font-weight:500;color:var(--color-text-primary);}
+.mv.danger{color:var(--color-text-danger);}
+.mv.ok{color:var(--color-text-success);}
+.ms{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+
+.bar-wrap{margin:0.75rem 0 1.25rem;}
+.bar-track{height:6px;border-radius:4px;background:var(--color-background-secondary);overflow:hidden;display:flex;}
+.bar-seg{height:100%;transition:width .3s;}
+.bleg{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+.bli{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-text-secondary);}
+.bld{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+.card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:12px;}
+.card-title{font-size:11px;font-weight:500;letter-spacing:.08em;color:var(--color-text-tertiary);text-transform:uppercase;margin-bottom:12px;}
+
+.cols{display:grid;gap:6px;align-items:center;margin-bottom:6px;}
+.c-foh{grid-template-columns:28px 1fr 88px 58px 80px 80px 28px;}
+.c-oh{grid-template-columns:1fr 88px 58px 80px 80px 28px;}
+
+.rn{font-size:13px;color:var(--color-text-primary);}
+.ri{width:100%;padding:5px 8px;font-size:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);text-align:right;}
+.ri:focus{outline:none;border-color:var(--color-border-primary);}
+.ri.left{text-align:left;}
+.ri:disabled{opacity:.35;cursor:not-allowed;}
+.rsel{width:100%;padding:5px 6px;font-size:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
+.rt{font-size:13px;color:var(--color-text-secondary);text-align:right;}
+.rh{font-size:11px;color:var(--color-text-tertiary);}
+.rh.right{text-align:right;}
+
+.toggle{position:relative;width:28px;height:16px;flex-shrink:0;align-self:center;}
+.toggle input{opacity:0;width:0;height:0;}
+.tsl{position:absolute;inset:0;background:var(--color-border-secondary);border-radius:8px;cursor:pointer;transition:.2s;}
+.toggle input:checked+.tsl{background:var(--color-text-primary);}
+.tsl:before{content:'';position:absolute;width:10px;height:10px;left:3px;top:3px;background:var(--color-background-primary);border-radius:50%;transition:.2s;}
+.toggle input:checked+.tsl:before{transform:translateX(12px);}
+
+.del-btn{width:22px;height:22px;border:0.5px solid var(--color-border-tertiary);border-radius:4px;background:transparent;cursor:pointer;color:var(--color-text-tertiary);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;line-height:1;padding:0;}
+.del-btn:hover{border-color:var(--color-border-danger);color:var(--color-text-danger);}
+
+.subtot-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 2px;border-top:0.5px solid var(--color-border-tertiary);margin-top:6px;}
+.stl{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.sta{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:right;min-width:80px;}
+
+.add-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 12px;cursor:pointer;background:transparent;margin-top:8px;transition:all .15s;width:100%;}
+.add-btn:hover{border-color:var(--color-border-primary);color:var(--color-text-primary);}
+
+.warn{font-size:12px;color:var(--color-text-danger);margin-top:8px;display:none;}
+.warn.show{display:block;}
+
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1.75rem 0;}
+
+.addon-box{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:12px;}
+.addon-hdr{display:flex;align-items:center;justify-content:space-between;}
+
+.tabs{display:flex;gap:8px;margin-bottom:1rem;}
+.tab{padding:6px 16px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s;}
+.tab.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}
+</style>
+</head>
+<body>
+<div class="outer">
+<div class="sticky-top">
+  <div class="tabs">
+    <button class="tab active" onclick="setTier('v01')">V0.1 — Sprint</button>
+    <button class="tab" onclick="setTier('v10')">V1.0 — Full Build</button>
+  </div>
+  <div class="g3">
+    <div class="met"><div class="ml">Project value</div><div class="mv" id="cv">—</div><div class="ms" id="cw">— weeks</div></div>
+    <div class="met"><div class="ml">Take-home (after tax)</div><div class="mv" id="ct">—</div><div class="ms" id="cr">—</div></div>
+    <div class="met"><div class="ml">Project net</div><div class="mv" id="cn">—</div><div class="ms" id="cnp">—</div></div>
+  </div>
+  <div class="bar-wrap">
+    <div class="bar-track">
+      <div class="bar-seg" id="bp" style="background:#5DCAA5;"></div>
+      <div class="bar-seg" id="bc" style="background:#7F77DD;"></div>
+      <div class="bar-seg" id="bo" style="background:#B4B2A9;"></div>
+      <div class="bar-seg" id="bt" style="background:#378ADD;"></div>
+    </div>
+    <div class="bleg">
+      <div class="bli"><div class="bld" style="background:#5DCAA5;"></div>Net profit</div>
+      <div class="bli"><div class="bld" style="background:#7F77DD;"></div>Owner comp</div>
+      <div class="bli"><div class="bld" style="background:#B4B2A9;"></div>Overhead</div>
+      <div class="bli"><div class="bld" style="background:#378ADD;"></div>Team</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Back of house</div>
+  <div class="cols c-oh" style="margin-bottom:4px;">
+    <div class="rh">Item</div>
+    <div class="rh right">% of value</div>
+    <div class="rh"></div><div class="rh"></div>
+    <div class="rh right">Total</div>
+    <div></div>
+  </div>
+  <div class="cols c-oh">
+    <div class="rn">Net profit</div>
+    <input class="ri" id="pct-profit" type="number" value="5" min="0" max="50" oninput="recalc()">
+    <div></div><div></div>
+    <div class="rt" id="amt-profit">—</div>
+    <div></div>
+  </div>
+  <div class="cols c-oh">
+    <div class="rn">Owner comp</div>
+    <input class="ri" id="pct-comp" type="number" value="40" min="0" max="80" oninput="recalc()">
+    <div></div><div></div>
+    <div class="rt" id="amt-comp">—</div>
+    <div></div>
+  </div>
+  <div style="font-size:11px;color:var(--color-text-tertiary);margin:-2px 0 6px;text-align:right;padding-right:34px;" id="comp-detail">—</div>
+  <div class="subtot-row">
+    <span class="stl">Subtotal</span>
+    <span class="sta" id="boh-subtotal">—</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Back of house — overhead</div>
+  <div class="cols c-oh" style="margin-bottom:4px;">
+    <div class="rh">Item</div>
+    <div class="rh right">Rate</div>
+    <div class="rh right">Qty</div>
+    <div class="rh">Unit</div>
+    <div class="rh right">Total</div>
+    <div></div>
+  </div>
+  <div id="oh-rows"></div>
+  <button class="add-btn" onclick="addOhRow()">+ add overhead item</button>
+  <div class="subtot-row">
+    <span class="stl">Subtotal</span>
+    <span class="sta" id="oh-subtotal">—</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Front of house — team</div>
+  <div class="cols c-foh" style="margin-bottom:4px;">
+    <div></div>
+    <div class="rh">Role / item</div>
+    <div class="rh right">Rate</div>
+    <div class="rh right">Qty</div>
+    <div class="rh">Unit</div>
+    <div class="rh right">Total</div>
+    <div></div>
+  </div>
+  <div id="foh-rows"></div>
+  <button class="add-btn" onclick="addFohRow()">+ add line item</button>
+  <div class="subtot-row">
+    <span class="stl">Subtotal</span>
+    <span class="sta" id="foh-subtotal">—</span>
+  </div>
+  <div class="warn" id="warn-split">Front of house exceeds 50% — consider raising your rate or reducing scope.</div>
+  <div class="warn" id="warn-net">Project net is negative — allocations exceed project value.</div>
+</div>
+
+<div class="addon-box">
+  <div class="addon-hdr">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <label class="toggle"><input type="checkbox" id="en-addon" onchange="toggleAddon()"><span class="tsl"></span></label>
+      <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Development add-on</span>
+    </div>
+    <span style="font-size:13px;color:var(--color-text-secondary);" id="addon-lbl">off</span>
+  </div>
+  <div id="addon-body" style="display:none;margin-top:1rem;">
+    <div class="cols c-oh" style="margin-bottom:4px;">
+      <div class="rh">Role / item</div>
+      <div class="rh right">Rate</div>
+      <div class="rh right">Qty</div>
+      <div class="rh">Unit</div>
+      <div class="rh right">Total</div>
+      <div></div>
+    </div>
+    <div id="addon-rows"></div>
+    <button class="add-btn" onclick="addAddonRow()">+ add line item</button>
+    <div class="subtot-row">
+      <span class="stl">Add-on total</span>
+      <span class="sta" id="addon-total">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:4px 0;">
+      <span style="font-size:12px;color:var(--color-text-secondary);">Combined with current tier</span>
+      <span style="font-size:12px;color:var(--color-text-secondary);min-width:80px;text-align:right;" id="addon-combined">—</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="card">
+  <div class="card-title">Tax</div>
+  <div class="cols c-oh" style="margin-bottom:4px;">
+    <div class="rh">Item</div>
+    <div class="rh right">Rate</div>
+    <div class="rh"></div><div class="rh"></div>
+    <div class="rh right">Total</div>
+    <div></div>
+  </div>
+  <div class="cols c-oh">
+    <div class="rn">Tax rate</div>
+    <input class="ri" id="tax-rate" type="number" value="27" min="0" max="60" oninput="recalc()">
+    <div></div><div></div>
+    <div class="rt" id="amt-tax">—</div>
+    <div></div>
+  </div>
+  <div style="font-size:11px;color:var(--color-text-tertiary);margin:2px 0 6px;text-align:right;padding-right:34px;">applied to owner comp + net profit + positive project net</div>
+</div>
+</div>
+
+<script>
+const fmt=v=>'$'+Math.round(Math.abs(v)).toLocaleString();
+const fmtS=v=>(v<0?'-':'')+fmt(v);
+const pctS=v=>Math.round(v)+'%';
+const OWNER_RATE=5000;
+const UNITS=['hour','day','week','month','flat fee'];
+let tier='v01';
+let fohRows=[];
+let ohRows=[];
+let addonRows=[];
+
+function lineTotal(rate,qty,unit){return unit==='flat fee'?rate:rate*qty;}
+
+function makeSel(val,onchange){
+  return `<select class="rsel" onchange="${onchange}">${UNITS.map(u=>`<option value="${u}"${u===val?' selected':''}>${u}</option>`).join('')}</select>`;
+}
+
+function renderFoh(){
+  document.getElementById('foh-rows').innerHTML=fohRows.map((r,i)=>`
+    <div class="cols c-foh">
+      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="fohRows[${i}].on=this.checked;recalc()"><span class="tsl"></span></label>
+      <input class="ri left" type="text" value="${r.name}" oninput="fohRows[${i}].name=this.value" style="font-size:13px;">
+      <input class="ri" type="number" value="${r.rate}" oninput="fohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
+      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
+      ${makeSel(r.unit,`fohRows[${i}].unit=this.value;renderFoh();recalc()`)}
+      <div class="rt" id="foh-amt-${i}">—</div>
+      <button class="del-btn" onclick="fohRows.splice(${i},1);renderFoh();recalc()">×</button>
+    </div>`).join('');
+}
+
+function renderOh(){
+  document.getElementById('oh-rows').innerHTML=ohRows.map((r,i)=>`
+    <div class="cols c-oh">
+      <input class="ri left" type="text" value="${r.name}" oninput="ohRows[${i}].name=this.value" style="font-size:13px;">
+      <input class="ri" type="number" value="${r.rate}" oninput="ohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
+      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="ohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
+      ${makeSel(r.unit,`ohRows[${i}].unit=this.value;renderOh();recalc()`)}
+      <div class="rt" id="oh-amt-${i}">—</div>
+      <button class="del-btn" onclick="ohRows.splice(${i},1);renderOh();recalc()">×</button>
+    </div>`).join('');
+}
+
+function renderAddon(){
+  document.getElementById('addon-rows').innerHTML=addonRows.map((r,i)=>`
+    <div class="cols c-oh">
+      <input class="ri left" type="text" value="${r.name}" oninput="addonRows[${i}].name=this.value" style="font-size:13px;">
+      <input class="ri" type="number" value="${r.rate}" oninput="addonRows[${i}].rate=parseFloat(this.value)||0;recalcAddon()">
+      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="addonRows[${i}].qty=parseFloat(this.value)||0;recalcAddon()" ${r.unit==='flat fee'?'disabled':''}>
+      ${makeSel(r.unit,`addonRows[${i}].unit=this.value;renderAddon();recalcAddon()`)}
+      <div class="rt" id="addon-amt-${i}">—</div>
+      <button class="del-btn" onclick="addonRows.splice(${i},1);renderAddon();recalcAddon()">×</button>
+    </div>`).join('');
+}
+
+function addFohRow(){fohRows.push({name:'',rate:3000,qty:1,unit:'week',on:true});renderFoh();recalc();}
+function addOhRow(){ohRows.push({name:'',rate:500,qty:1,unit:'month'});renderOh();recalc();}
+function addAddonRow(){addonRows.push({name:'',rate:3000,qty:1,unit:'week'});renderAddon();recalcAddon();}
+
+function calcFoh(){return fohRows.reduce((s,r)=>s+(r.on?lineTotal(r.rate,r.qty,r.unit):0),0);}
+function calcOh(){return ohRows.reduce((s,r)=>s+lineTotal(r.rate,r.qty,r.unit),0);}
+
+function recalc(){
+  const projectWeeks=tier==='v01'?4:6;
+  const pP=parseFloat(document.getElementById('pct-profit').value)||0;
+  const pC=parseFloat(document.getElementById('pct-comp').value)||0;
+  const teamCost=calcFoh();
+  const ohCost=calcOh();
+  const teamPct=100-pP-pC;
+  const pv=teamPct>0?(teamCost+ohCost)/(teamPct/100):0;
+
+  const aP=pv*pP/100;
+  const aC=pv*pC/100;
+  const bohSubtotal=aP+aC;
+
+  document.getElementById('amt-profit').textContent=fmt(aP);
+  document.getElementById('amt-comp').textContent=fmt(aC);
+  document.getElementById('boh-subtotal').textContent=fmt(bohSubtotal);
+
+  const ownerWks=aC/OWNER_RATE;
+  document.getElementById('comp-detail').textContent=ownerWks.toFixed(1)+' wks @ $'+OWNER_RATE.toLocaleString()+'/wk';
+
+  fohRows.forEach((r,i)=>{
+    const el=document.getElementById('foh-amt-'+i);
+    if(el) el.textContent=r.on?fmt(lineTotal(r.rate,r.qty,r.unit)):'—';
+  });
+  document.getElementById('foh-subtotal').textContent=fmt(teamCost);
+
+  ohRows.forEach((r,i)=>{
+    const el=document.getElementById('oh-amt-'+i);
+    if(el) el.textContent=fmt(lineTotal(r.rate,r.qty,r.unit));
+  });
+  document.getElementById('oh-subtotal').textContent=fmt(ohCost);
+
+  const allocated=aP+aC+ohCost+teamCost;
+  const rawNet=pv-allocated;
+
+  const taxR=(parseFloat(document.getElementById('tax-rate').value)||0)/100;
+  const taxableBase=aC+aP+Math.max(0,rawNet);
+  const tax=taxableBase*taxR;
+  document.getElementById('amt-tax').textContent=fmt(tax);
+
+  const takehome=aC-aC*taxR;
+
+  document.getElementById('cv').textContent=fmt(pv);
+  document.getElementById('cw').textContent=projectWeeks+' weeks';
+  document.getElementById('ct').textContent=fmt(takehome);
+  document.getElementById('cr').textContent=(ownerWks>0?fmt(takehome/ownerWks):fmt(0))+'/week net';
+
+  const nel=document.getElementById('cn');
+  nel.textContent=fmtS(rawNet);
+  nel.className='mv'+(rawNet<-1?' danger':' ok');
+  document.getElementById('cnp').textContent=(pv>0?pctS(rawNet/pv*100):'0%')+' of value';
+
+  const tot=pv||1;
+  document.getElementById('bp').style.width=pctS(aP/tot*100);
+  document.getElementById('bc').style.width=pctS(aC/tot*100);
+  document.getElementById('bo').style.width=pctS(ohCost/tot*100);
+  document.getElementById('bt').style.width=pctS(teamCost/tot*100);
+
+  document.getElementById('warn-split').classList.toggle('show',teamCost>pv*0.5);
+  document.getElementById('warn-net').classList.toggle('show',rawNet<-1);
+
+  recalcAddon(pv);
+}
+
+function recalcAddon(pv){
+  if(!document.getElementById('en-addon').checked) return;
+  let t=0;
+  addonRows.forEach((r,i)=>{
+    const amt=lineTotal(r.rate,r.qty,r.unit);
+    t+=amt;
+    const el=document.getElementById('addon-amt-'+i);
+    if(el) el.textContent=fmt(amt);
+  });
+  document.getElementById('addon-total').textContent=fmt(t);
+  document.getElementById('addon-lbl').textContent=fmt(t);
+  const base=pv||0;
+  document.getElementById('addon-combined').textContent=fmt(base+t);
+}
+
+function toggleAddon(){
+  const on=document.getElementById('en-addon').checked;
+  document.getElementById('addon-body').style.display=on?'block':'none';
+  document.getElementById('addon-lbl').textContent=on?'':'off';
+  if(on) recalcAddon();
+}
+
+const DEFAULTS={
+  v01:{
+    foh:[
+      {name:'Brand',rate:3000,qty:2,unit:'week',on:true},
+      {name:'Product',rate:3000,qty:1,unit:'week',on:true},
+      {name:'Research',rate:3000,qty:2,unit:'week',on:true},
+      {name:'Engineering',rate:4000,qty:0,unit:'week',on:false},
+      {name:'Support',rate:500,qty:2,unit:'week',on:true},
+    ],
+    oh:[
+      {name:'Software & tools',rate:200,qty:1,unit:'month'},
+      {name:'Admin support',rate:500,qty:1,unit:'flat fee'},
+    ]
+  },
+  v10:{
+    foh:[
+      {name:'Brand',rate:3000,qty:2,unit:'week',on:true},
+      {name:'Product',rate:3000,qty:6,unit:'week',on:true},
+      {name:'Research',rate:3000,qty:2,unit:'week',on:true},
+      {name:'Engineering',rate:4000,qty:6,unit:'week',on:true},
+      {name:'Support',rate:500,qty:6,unit:'week',on:true},
+    ],
+    oh:[
+      {name:'Software & tools',rate:200,qty:1,unit:'month'},
+      {name:'Admin support',rate:500,qty:1,unit:'flat fee'},
+    ]
+  }
+};
+
+function setTier(t){
+  tier=t;
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='v01')||(i===1&&t==='v10')));
+  fohRows=JSON.parse(JSON.stringify(DEFAULTS[t].foh));
+  ohRows=JSON.parse(JSON.stringify(DEFAULTS[t].oh));
+  renderFoh();renderOh();recalc();
+}
+
+addonRows=[
+  {name:'Engineering',rate:4000,qty:4,unit:'week'},
+  {name:'Product (handoff)',rate:3000,qty:1,unit:'week'},
+];
+
+setTier('v01');
+</script>
+</body>
+</html>
