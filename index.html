@@ -159,7 +159,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="sticky-bottom">
   <div class="proj-name-wrap"><input class="proj-name" id="proj-name" type="text" value="Untitled Project" oninput="onProjName()"><span class="proj-saved" id="proj-saved">&#10003; Project title updated</span></div>
   <div class="g3">
-    <div class="met"><div class="ml">Project value</div><div style="display:flex;align-items:baseline;"><span class="mv" style="margin-right:2px;">$</span><input class="mv-input" id="cv" type="text" value="50,000" oninput="formatPv(this);recalc()"></div></div>
+    <div class="met"><div class="ml">Project value</div><div style="display:flex;align-items:baseline;"><span class="mv" style="margin-right:2px;">$</span><input class="mv-input" id="cv" type="text" value="48,000" oninput="formatPv(this);recalc()"></div></div>
     <div class="met"><div class="ml">Tax</div><div class="mv" id="ct-tax">—</div><div class="ms" id="ct-tax-detail">—</div></div>
     <div class="met"><div class="ml">Project net</div><div class="mv" id="cn">—</div><div class="ms" id="cnp">—</div></div>
   </div>
@@ -199,13 +199,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="cols c-oh">
     <div class="rn">Tax</div>
-    <input class="ri" id="tax-rate" type="number" value="27" min="0" max="60" oninput="recalc()">
+    <input class="ri" id="tax-rate" type="number" value="35" min="0" max="60" oninput="recalc()">
     <div></div><div></div>
     <div class="rt" id="amt-tax">—</div>
   </div>
   <div class="cols c-oh">
     <div class="rn">Owner comp</div>
-    <input class="ri" id="pct-comp" type="number" value="40" min="0" max="80" oninput="recalc()">
+    <input class="ri" id="pct-comp" type="number" value="10" min="0" max="80" oninput="recalc()">
     <div></div><div></div>
     <div class="rt" id="amt-comp">—</div>
   </div>
@@ -217,7 +217,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="card">
-  <div class="card-title">Back of house — overhead <span class="pct-tag" id="oh-pct">—</span></div>
+  <div class="card-title">Back of house (expenses) <span class="pct-tag" id="oh-pct">—</span></div>
   <div class="cols c-foh" style="margin-bottom:4px;">
     <div></div>
     <div class="rh">Item</div>
@@ -239,7 +239,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="card">
-  <div class="card-title">Front of house <span class="pct-tag" id="foh-pct">—</span></div>
+  <div class="card-title">Front of house (contractors) <span class="pct-tag" id="foh-pct">—</span></div>
   <div class="cols c-foh" style="margin-bottom:4px;">
     <div></div>
     <div class="rh">Role / item</div>
@@ -260,6 +260,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="warn" id="warn-split">Front of house exceeds 50% — consider raising your rate or reducing scope.</div>
   <div class="warn" id="warn-net">Project net is negative — allocations exceed project value.</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Front of house (expenses) <span class="pct-tag" id="fohexp-pct">—</span></div>
+  <div class="cols c-foh" style="margin-bottom:4px;">
+    <div></div>
+    <div class="rh">Item</div>
+    <div class="rh">Rate</div>
+    <div class="rh">Qty</div>
+    <div class="rh">Unit</div>
+    <div class="rh right">Total</div>
+  </div>
+  <div id="fohexp-rows"></div>
+  <div class="cols c-foh ghost-row" onclick="addFohExpRow()">
+    <div></div>
+    <div class="ghost-label">+ Add new row</div>
+    <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
+  </div>
+  <div class="subtot-row">
+    <span class="stl">Subtotal</span>
+    <span class="sta" id="fohexp-subtotal">—</span>
+  </div>
 </div>
 
 </div>
@@ -283,6 +305,7 @@ function formatPv(el){
 }
 let fohRows=[];
 let ohRows=[];
+let fohExpRows=[];
 let _projDebounce,_projHide;
 function onProjName(){
   saveState();
@@ -377,11 +400,26 @@ function renderOh(){
     </div>`).join('');
 }
 
+function renderFohExp(){
+  const c=document.getElementById('fohexp-rows');
+  c.innerHTML=fohExpRows.map((r,i)=>`
+    <div class="cols c-foh${r.on?'':' off'}" draggable="true" data-idx="${i}">
+      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="fohExpRows[${i}].on=this.checked;renderFohExp();recalc()"><span class="tsl"></span></label>
+      <input class="ri left" type="text" value="${r.name}" oninput="fohExpRows[${i}].name=this.value" style="font-size:13px;">
+      <input class="ri" type="number" value="${r.rate}" oninput="fohExpRows[${i}].rate=parseFloat(this.value)||0;recalc()">
+      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohExpRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
+      ${makeSel(r.unit,`fohExpRows[${i}].unit=this.value;renderFohExp();recalc()`)}
+      <div class="rt-wrap"><div class="rt" id="fohexp-amt-${i}">—</div><button class="del-btn" onclick="fohExpRows.splice(${i},1);renderFohExp();recalc()">×</button></div>
+    </div>`).join('');
+}
+
 function addFohRow(){fohRows.push({name:'',rate:3000,qty:1,unit:'week',on:true});renderFoh();recalc();}
 function addOhRow(){ohRows.push({name:'',rate:500,qty:1,unit:'month',on:true});renderOh();recalc();}
+function addFohExpRow(){fohExpRows.push({name:'',rate:500,qty:1,unit:'month',on:true});renderFohExp();recalc();}
 
 function calcFoh(){return fohRows.reduce((s,r)=>s+(r.on?lineTotal(r.rate,r.qty,r.unit):0),0);}
 function calcOh(){return ohRows.reduce((s,r)=>s+(r.on?lineTotal(r.rate,r.qty,r.unit):0),0);}
+function calcFohExp(){return fohExpRows.reduce((s,r)=>s+(r.on?lineTotal(r.rate,r.qty,r.unit):0),0);}
 
 function recalc(){
   const pv=parsePv(document.getElementById('cv'));
@@ -395,6 +433,7 @@ function recalc(){
   const bohSubtotal=aP+tax+aC;
   const teamCost=calcFoh();
   const ohCost=calcOh();
+  const fohExpCost=calcFohExp();
 
   document.getElementById('amt-profit').textContent=fmt(aP);
   document.getElementById('amt-tax').textContent=fmt(tax);
@@ -416,7 +455,13 @@ function recalc(){
   });
   document.getElementById('oh-subtotal').textContent=fmt(ohCost);
 
-  const allocated=aP+tax+aC+ohCost+teamCost;
+  fohExpRows.forEach((r,i)=>{
+    const el=document.getElementById('fohexp-amt-'+i);
+    if(el) el.textContent=r.on?fmt(lineTotal(r.rate,r.qty,r.unit)):'—';
+  });
+  document.getElementById('fohexp-subtotal').textContent=fmt(fohExpCost);
+
+  const allocated=aP+tax+aC+ohCost+teamCost+fohExpCost;
   const rawNet=pv-allocated;
 
   // Top metrics
@@ -433,9 +478,11 @@ function recalc(){
   document.getElementById('boh-pct').textContent=pv>0?pctS(bohSubtotal/pv*100):'—';
   document.getElementById('oh-pct').textContent=pv>0?pctS(ohCost/pv*100):'—';
   document.getElementById('foh-pct').textContent=pv>0?pctS(teamCost/pv*100):'—';
+  document.getElementById('fohexp-pct').textContent=pv>0?pctS(fohExpCost/pv*100):'—';
   document.getElementById('boh-pct').classList.toggle('over',isOver);
   document.getElementById('oh-pct').classList.toggle('over',isOver);
   document.getElementById('foh-pct').classList.toggle('over',isOver);
+  document.getElementById('fohexp-pct').classList.toggle('over',isOver);
 
   // Bar chart — use allocated as base if over budget so segments shrink proportionally
   const overage=Math.max(0,-rawNet);
@@ -463,7 +510,8 @@ function getState(){
     t:parseFloat(document.getElementById('tax-rate').value)||0,
     c:parseFloat(document.getElementById('pct-comp').value)||0,
     f:fohRows.map(r=>({n:r.name,r:r.rate,q:r.qty,u:r.unit,o:r.on?1:0})),
-    o:ohRows.map(r=>({n:r.name,r:r.rate,q:r.qty,u:r.unit,o:r.on?1:0}))
+    o:ohRows.map(r=>({n:r.name,r:r.rate,q:r.qty,u:r.unit,o:r.on?1:0})),
+    e:fohExpRows.map(r=>({n:r.name,r:r.rate,q:r.qty,u:r.unit,o:r.on?1:0}))
   };
 }
 
@@ -484,34 +532,38 @@ function loadState(){
     if(s.n) document.getElementById('proj-name').value=s.n;
     document.getElementById('cv').value=(s.v||0).toLocaleString();
     document.getElementById('pct-profit').value=s.p||5;
-    document.getElementById('tax-rate').value=s.t||27;
-    document.getElementById('pct-comp').value=s.c||40;
+    document.getElementById('tax-rate').value=s.t||35;
+    document.getElementById('pct-comp').value=s.c||10;
     if(s.f) fohRows=s.f.map(r=>({name:r.n,rate:r.r,qty:r.q,unit:r.u,on:!!r.o}));
     if(s.o) ohRows=s.o.map(r=>({name:r.n,rate:r.r,qty:r.q,unit:r.u,on:r.o!==undefined?!!r.o:true}));
+    if(s.e) fohExpRows=s.e.map(r=>({name:r.n,rate:r.r,qty:r.q,unit:r.u,on:r.o!==undefined?!!r.o:true}));
     return true;
   }catch(e){return false;}
 }
 
 // --- Init ---
 const DEFAULT_FOH=[
-  {name:'Brand',rate:3000,qty:2,unit:'week',on:true},
-  {name:'Product',rate:3000,qty:1,unit:'week',on:true},
-  {name:'Research',rate:3000,qty:2,unit:'week',on:true},
-  {name:'Engineering',rate:4000,qty:0,unit:'week',on:false},
-  {name:'Support',rate:500,qty:2,unit:'week',on:true},
+  {name:'Design lead',rate:5000,qty:3,unit:'week',on:true},
+  {name:'Designer',rate:3000,qty:1,unit:'week',on:true},
+  {name:'Researcher',rate:120,qty:40,unit:'hour',on:true},
 ];
 const DEFAULT_OH=[
-  {name:'Software & tools',rate:200,qty:1,unit:'month',on:true},
-  {name:'Admin support',rate:500,qty:1,unit:'flat fee',on:true},
+  {name:'Core operational expenses',rate:500,qty:1,unit:'flat fee',on:true},
+];
+const DEFAULT_FOHEXP=[
+  {name:'Study recruiting budget',rate:500,qty:1,unit:'flat fee',on:true},
+  {name:'Font licensing fees',rate:200,qty:1,unit:'flat fee',on:true},
 ];
 
 if(!loadState()){
   fohRows=JSON.parse(JSON.stringify(DEFAULT_FOH));
   ohRows=JSON.parse(JSON.stringify(DEFAULT_OH));
+  fohExpRows=JSON.parse(JSON.stringify(DEFAULT_FOHEXP));
 }
-renderFoh();renderOh();recalc();
+renderFoh();renderOh();renderFohExp();recalc();
 setupDrag(document.getElementById('foh-rows'),fohRows,renderFoh);
 setupDrag(document.getElementById('oh-rows'),ohRows,renderOh);
+setupDrag(document.getElementById('fohexp-rows'),fohExpRows,renderFohExp);
 </script>
 </body>
 </html>
