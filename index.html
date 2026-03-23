@@ -42,9 +42,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   }
 }
 
-.outer{max-width:780px;margin:0 auto;padding:0 1.5rem 3rem;}
+.outer{max-width:780px;margin:0 auto;padding:1rem 1.5rem 220px;}
 
-.sticky-top{background:var(--color-background-tertiary);padding:1rem 0 0.75rem;}
+.sticky-bottom{position:fixed;bottom:0;left:0;right:0;background:var(--color-background-tertiary);padding:1.25rem 1.5rem;z-index:10;border-top:0.5px solid var(--color-border-tertiary);}
+.sticky-bottom .g3{max-width:780px;margin:0 auto;}
+.sticky-bottom .bar-wrap{max-width:780px;margin:0.75rem auto 0;}
+.proj-name-wrap{max-width:780px;margin:0 auto 0.75rem;position:relative;}
+.proj-name{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary);background:transparent;border:none;border-bottom:1px dashed var(--color-border-secondary);padding:0 0 3px;outline:none;font-family:inherit;width:100%;display:block;}
+.proj-name:focus{border-bottom-color:var(--color-border-primary);color:var(--color-text-primary);}
+.proj-saved{font-size:11px;color:var(--color-text-success);opacity:0;transition:opacity .2s;white-space:nowrap;position:absolute;right:0;top:50%;transform:translateY(-50%);}
+.proj-saved.show{opacity:1;}
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
 .met{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:14px 16px;}
 .ml{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
@@ -60,19 +67,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bli{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-text-secondary);}
 .bld{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
 
-.card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:12px;}
-.card-title{font-size:11px;font-weight:500;letter-spacing:.08em;color:var(--color-text-tertiary);text-transform:uppercase;margin-bottom:12px;}
+.card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1.25rem;overflow:visible;}
+.card-title{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--color-text-tertiary);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.pct-tag{font-size:10px;font-weight:500;line-height:1;color:var(--color-text-secondary);text-transform:none;letter-spacing:0;background:var(--color-border-tertiary);border-radius:10px;padding:3px 8px;transition:all .2s;}
+.pct-tag.over{background:var(--color-text-danger);color:var(--color-background-tertiary);}
+.mv-input{font-size:20px;font-weight:500;color:var(--color-text-primary);background:transparent;border:none;border-bottom:1px dashed var(--color-border-secondary);width:100%;padding:0 0 2px;outline:none;font-family:inherit;}
+.mv-input:focus{border-bottom-color:var(--color-border-primary);}
 
-.cols{display:grid;gap:6px;align-items:center;margin-bottom:6px;position:relative;}
+.cols{display:grid;gap:10px;align-items:center;margin-bottom:6px;position:relative;transition:opacity .2s;}
+.cols.off{opacity:.35;}
+.cols[draggable="true"]{cursor:grab;}
+.cols[draggable="true"]:active{cursor:grabbing;}
+.cols.drag-over-top{border-top:2px solid var(--color-text-primary);margin-top:-2px;}
+.cols.drag-over-bottom{border-bottom:2px solid var(--color-text-primary);margin-bottom:-2px;}
+.cols.dragging{opacity:.3;}
 .c-foh{grid-template-columns:28px 1fr 88px 58px 80px 80px;}
 .c-oh{grid-template-columns:1fr 88px 58px 80px 80px;}
 
 .rn{font-size:13px;color:var(--color-text-primary);}
-.ri{width:100%;padding:5px 8px;font-size:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
-.ri:focus{outline:none;border-color:var(--color-border-primary);}
+.ri{width:100%;padding:4px 0;font-size:13px;border:none;border-bottom:1px dashed var(--color-border-secondary);border-radius:0;background:transparent;color:var(--color-text-primary);}
+.ri:focus{outline:none;border-bottom-color:var(--color-border-primary);}
 .ri:disabled{opacity:.35;cursor:not-allowed;}
-.rsel{width:100%;padding:5px 6px;font-size:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
-.rt{font-size:13px;color:var(--color-text-secondary);text-align:right;}
+.ri.readonly{border-bottom-style:solid;border-bottom-color:var(--color-border-tertiary);color:var(--color-text-secondary);}
+.rsel{width:100%;padding:4px 10px 4px 0;font-size:12px;border:none;border-bottom:1px dashed var(--color-border-secondary);border-radius:0;background:transparent;color:var(--color-text-primary);-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239b9b96'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;cursor:pointer;}
+.rt{font-size:13px;color:var(--color-text-secondary);text-align:right;padding:4px 0;border-bottom:1px dashed var(--color-border-tertiary);}
 .rh{font-size:11px;color:var(--color-text-tertiary);}
 .rh.right{text-align:right;}
 
@@ -83,60 +101,87 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tsl:before{content:'';position:absolute;width:10px;height:10px;left:3px;top:3px;background:var(--color-background-primary);border-radius:50%;transition:.2s;}
 .toggle input:checked+.tsl:before{transform:translateX(12px);}
 
-.del-btn{width:22px;height:22px;border:0.5px solid var(--color-border-tertiary);border-radius:4px;background:transparent;cursor:pointer;color:var(--color-text-tertiary);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;line-height:1;padding:0;opacity:0;pointer-events:none;position:absolute;left:-30px;top:50%;transform:translateY(-50%);}
-.cols:hover .del-btn{opacity:1;pointer-events:auto;}
-.del-btn:hover{border-color:var(--color-border-danger);color:var(--color-text-danger);}
+.rt-wrap{display:flex;align-items:center;justify-content:flex-end;gap:0;overflow:hidden;}
+.rt-wrap .rt{transition:transform .2s ease;}
+.rt-wrap .del-btn{width:0;opacity:0;border:none;background:transparent;cursor:pointer;color:var(--color-text-tertiary);font-size:14px;display:flex;align-items:center;justify-content:center;padding:0;transition:width .2s ease,opacity .2s ease;overflow:hidden;flex-shrink:0;}
+.cols:hover .rt-wrap .rt{transform:translateX(-10px);}
+.cols:hover .rt-wrap .del-btn{width:24px;opacity:1;}
+.rt-wrap .del-btn:hover{color:var(--color-text-danger);}
 
 .subtot-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 2px;border-top:0.5px solid var(--color-border-tertiary);margin-top:16px;}
 .stl{font-size:13px;font-weight:500;color:var(--color-text-primary);}
 .sta{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:right;min-width:80px;}
 
-.add-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 12px;cursor:pointer;background:transparent;margin-top:8px;transition:all .15s;width:100%;}
-.add-btn:hover{border-color:var(--color-border-primary);color:var(--color-text-primary);}
+.ghost-row{cursor:pointer;}
+.ghost-row .ghost-label{color:transparent;font-size:13px;padding:4px 0;border-bottom:1px dashed var(--color-border-tertiary);transition:color .15s;}
+.ghost-row:hover .ghost-label{color:var(--color-text-tertiary);}
 
 .warn{font-size:12px;color:var(--color-text-danger);margin-top:8px;display:none;}
 .warn.show{display:block;}
 
-.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1.75rem 0;}
+@media (max-width:600px){
+  .outer{padding:0.75rem 1rem 160px;}
+  .sticky-bottom{padding:0.5rem 1rem 0.75rem;}
+  .sticky-bottom .bar-wrap{margin:0.4rem auto 0;}
+  .bleg{gap:8px;}
+  .bli{font-size:11px;}
+  .g3{gap:6px;}
+  .met{padding:10px 12px;}
+  .mv{font-size:18px;}
+  .mv-input{font-size:18px;}
+  .ml{font-size:11px;}
+  .ms{font-size:10px;}
+  .card{padding:1rem;margin-bottom:1rem;}
+  .c-oh{grid-template-columns:1fr 70px 44px 66px 60px;}
+  .c-foh{grid-template-columns:28px 1fr 70px 44px 66px 60px;}
+  .rh,.rn,.ri,.rt,.rsel{font-size:13px;}
+  .ri{padding:4px 6px;}
+  .rsel{padding:4px 8px 4px 4px;}
+  .subtot-row{margin-top:12px;}
+  .stl,.sta{font-size:13px;}
+}
 
-.addon-box{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:12px;}
-.addon-hdr{display:flex;align-items:center;justify-content:space-between;}
+@media (max-width:400px){
+  .c-oh{grid-template-columns:1fr 60px 38px 56px 52px;}
+  .c-foh{grid-template-columns:24px 1fr 60px 38px 56px 52px;}
+  .toggle{width:24px;height:14px;}
+  .tsl:before{width:8px;height:8px;}
+  .toggle input:checked+.tsl:before{transform:translateX(10px);}
+}
 
-.tabs{display:flex;gap:8px;margin-bottom:1rem;}
-.tab{padding:6px 16px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s;}
-.tab.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}
 </style>
 </head>
 <body>
 <div class="outer">
-<div class="sticky-top">
-  <div class="tabs">
-    <button class="tab active" onclick="setTier('v01')">V0.1 — Sprint</button>
-    <button class="tab" onclick="setTier('v10')">V1.0 — Full Build</button>
-  </div>
+<div class="sticky-bottom">
+  <div class="proj-name-wrap"><input class="proj-name" id="proj-name" type="text" value="Untitled Project" oninput="onProjName()"><span class="proj-saved" id="proj-saved">&#10003; Project title updated</span></div>
   <div class="g3">
-    <div class="met"><div class="ml">Project value</div><div class="mv" id="cv">—</div><div class="ms" id="cw">— weeks</div></div>
-    <div class="met"><div class="ml">Take-home (after tax)</div><div class="mv" id="ct">—</div><div class="ms" id="cr">—</div></div>
+    <div class="met"><div class="ml">Project value</div><div style="display:flex;align-items:baseline;"><span class="mv" style="margin-right:2px;">$</span><input class="mv-input" id="cv" type="text" value="50,000" oninput="formatPv(this);recalc()"></div></div>
+    <div class="met"><div class="ml">Tax</div><div class="mv" id="ct-tax">—</div><div class="ms" id="ct-tax-detail">—</div></div>
     <div class="met"><div class="ml">Project net</div><div class="mv" id="cn">—</div><div class="ms" id="cnp">—</div></div>
   </div>
   <div class="bar-wrap">
     <div class="bar-track">
+      <div class="bar-seg" id="bx" style="background:#E0A458;"></div>
       <div class="bar-seg" id="bp" style="background:#5DCAA5;"></div>
       <div class="bar-seg" id="bc" style="background:#7F77DD;"></div>
       <div class="bar-seg" id="bo" style="background:#B4B2A9;"></div>
       <div class="bar-seg" id="bt" style="background:#378ADD;"></div>
+      <div class="bar-seg" id="bover" style="background:var(--color-text-danger);"></div>
     </div>
     <div class="bleg">
+      <div class="bli"><div class="bld" style="background:#E0A458;"></div>Tax</div>
       <div class="bli"><div class="bld" style="background:#5DCAA5;"></div>Net profit</div>
       <div class="bli"><div class="bld" style="background:#7F77DD;"></div>Owner comp</div>
       <div class="bli"><div class="bld" style="background:#B4B2A9;"></div>Overhead</div>
       <div class="bli"><div class="bld" style="background:#378ADD;"></div>Team</div>
+      <div class="bli" id="bover-leg" style="display:none;"><div class="bld" style="background:var(--color-text-danger);"></div>Overage</div>
     </div>
   </div>
 </div>
 
 <div class="card">
-  <div class="card-title">Back of house</div>
+  <div class="card-title">Back of house <span class="pct-tag" id="boh-pct">—</span></div>
   <div class="cols c-oh" style="margin-bottom:4px;">
     <div class="rh">Item</div>
     <div class="rh">% of value</div>
@@ -148,6 +193,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <input class="ri" id="pct-profit" type="number" value="5" min="0" max="50" oninput="recalc()">
     <div></div><div></div>
     <div class="rt" id="amt-profit">—</div>
+  </div>
+  <div class="cols c-oh">
+    <div class="rn">Tax</div>
+    <input class="ri" id="tax-rate" type="number" value="27" min="0" max="60" oninput="recalc()">
+    <div></div><div></div>
+    <div class="rt" id="amt-tax">—</div>
   </div>
   <div class="cols c-oh">
     <div class="rn">Owner comp</div>
@@ -163,8 +214,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="card">
-  <div class="card-title">Back of house — overhead</div>
-  <div class="cols c-oh" style="margin-bottom:4px;">
+  <div class="card-title">Back of house — overhead <span class="pct-tag" id="oh-pct">—</span></div>
+  <div class="cols c-foh" style="margin-bottom:4px;">
+    <div></div>
     <div class="rh">Item</div>
     <div class="rh">Rate</div>
     <div class="rh">Qty</div>
@@ -172,7 +224,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="rh right">Total</div>
   </div>
   <div id="oh-rows"></div>
-  <button class="add-btn" onclick="addOhRow()">+ add overhead item</button>
+  <div class="cols c-foh ghost-row" onclick="addOhRow()">
+    <div></div>
+    <div class="ghost-label">+ Add new row</div>
+    <div></div><div></div><div></div><div></div>
+  </div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
     <span class="sta" id="oh-subtotal">—</span>
@@ -180,7 +236,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="card">
-  <div class="card-title">Front of house — team</div>
+  <div class="card-title">Front of house <span class="pct-tag" id="foh-pct">—</span></div>
   <div class="cols c-foh" style="margin-bottom:4px;">
     <div></div>
     <div class="rh">Role / item</div>
@@ -190,7 +246,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="rh right">Total</div>
   </div>
   <div id="foh-rows"></div>
-  <button class="add-btn" onclick="addFohRow()">+ add line item</button>
+  <div class="cols c-foh ghost-row" onclick="addFohRow()">
+    <div></div>
+    <div class="ghost-label">+ Add new row</div>
+    <div></div><div></div><div></div><div></div>
+  </div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
     <span class="sta" id="foh-subtotal">—</span>
@@ -199,53 +259,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="warn" id="warn-net">Project net is negative — allocations exceed project value.</div>
 </div>
 
-<div class="addon-box">
-  <div class="addon-hdr">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <label class="toggle"><input type="checkbox" id="en-addon" onchange="toggleAddon()"><span class="tsl"></span></label>
-      <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Development add-on</span>
-    </div>
-    <span style="font-size:13px;color:var(--color-text-secondary);" id="addon-lbl">off</span>
-  </div>
-  <div id="addon-body" style="display:none;margin-top:1rem;">
-    <div class="cols c-oh" style="margin-bottom:4px;">
-      <div class="rh">Role / item</div>
-      <div class="rh">Rate</div>
-      <div class="rh">Qty</div>
-      <div class="rh">Unit</div>
-      <div class="rh right">Total</div>
-    </div>
-    <div id="addon-rows"></div>
-    <button class="add-btn" onclick="addAddonRow()">+ add line item</button>
-    <div class="subtot-row">
-      <span class="stl">Add-on total</span>
-      <span class="sta" id="addon-total">—</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:4px 0;">
-      <span style="font-size:12px;color:var(--color-text-secondary);">Combined with current tier</span>
-      <span style="font-size:12px;color:var(--color-text-secondary);min-width:80px;text-align:right;" id="addon-combined">—</span>
-    </div>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<div class="card">
-  <div class="card-title">Tax</div>
-  <div class="cols c-oh" style="margin-bottom:4px;">
-    <div class="rh">Item</div>
-    <div class="rh">Rate</div>
-    <div class="rh"></div><div class="rh"></div>
-    <div class="rh right">Total</div>
-  </div>
-  <div class="cols c-oh">
-    <div class="rn">Tax rate</div>
-    <input class="ri" id="tax-rate" type="number" value="27" min="0" max="60" oninput="recalc()">
-    <div></div><div></div>
-    <div class="rt" id="amt-tax">—</div>
-  </div>
-  <div style="font-size:11px;color:var(--color-text-tertiary);margin:2px 0 6px;text-align:right;">applied to owner comp + net profit + positive project net</div>
-</div>
 </div>
 
 <script>
@@ -254,10 +267,31 @@ const fmtS=v=>(v<0?'-':'')+fmt(v);
 const pctS=v=>Math.round(v)+'%';
 const OWNER_RATE=5000;
 const UNITS=['hour','day','week','month','flat fee'];
-let tier='v01';
+
+function parsePv(el){return parseFloat(el.value.replace(/[^0-9.]/g,''))||0;}
+function formatPv(el){
+  const raw=el.value.replace(/[^0-9]/g,'');
+  const n=parseInt(raw)||0;
+  const pos=el.selectionStart;
+  const oldLen=el.value.length;
+  el.value=n.toLocaleString();
+  const diff=el.value.length-oldLen;
+  el.setSelectionRange(pos+diff,pos+diff);
+}
 let fohRows=[];
 let ohRows=[];
-let addonRows=[];
+let _projDebounce,_projHide;
+function onProjName(){
+  saveState();
+  const el=document.getElementById('proj-saved');
+  el.classList.remove('show');
+  clearTimeout(_projDebounce);
+  clearTimeout(_projHide);
+  _projDebounce=setTimeout(()=>{
+    el.classList.add('show');
+    _projHide=setTimeout(()=>el.classList.remove('show'),1500);
+  },2000);
+}
 
 function lineTotal(rate,qty,unit){return unit==='flat fee'?rate:rate*qty;}
 
@@ -265,64 +299,102 @@ function makeSel(val,onchange){
   return `<select class="rsel" onchange="${onchange}">${UNITS.map(u=>`<option value="${u}"${u===val?' selected':''}>${u}</option>`).join('')}</select>`;
 }
 
+function setupDrag(container,arr,renderFn){
+  let dragIdx=null;
+  const clearIndicators=()=>container.querySelectorAll('.drag-over-top,.drag-over-bottom').forEach(el=>{el.classList.remove('drag-over-top','drag-over-bottom');});
+  const getHalf=(e,row)=>{
+    const rect=row.getBoundingClientRect();
+    return e.clientY<rect.top+rect.height/2?'top':'bottom';
+  };
+  container.addEventListener('dragstart',e=>{
+    const row=e.target.closest('.cols[draggable]');
+    if(!row) return;
+    dragIdx=+row.dataset.idx;
+    row.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+  });
+  container.addEventListener('dragend',e=>{
+    const row=e.target.closest('.cols[draggable]');
+    if(row) row.classList.remove('dragging');
+    clearIndicators();
+    dragIdx=null;
+  });
+  container.addEventListener('dragover',e=>{
+    e.preventDefault();
+    const row=e.target.closest('.cols[draggable]');
+    if(!row) return;
+    clearIndicators();
+    row.classList.add(getHalf(e,row)==='top'?'drag-over-top':'drag-over-bottom');
+  });
+  container.addEventListener('dragleave',e=>{
+    const row=e.target.closest('.cols[draggable]');
+    if(row) row.classList.remove('drag-over-top','drag-over-bottom');
+  });
+  container.addEventListener('drop',e=>{
+    e.preventDefault();
+    const row=e.target.closest('.cols[draggable]');
+    if(!row||dragIdx===null) return;
+    let dropIdx=+row.dataset.idx;
+    const half=getHalf(e,row);
+    if(half==='bottom') dropIdx++;
+    if(dragIdx<dropIdx) dropIdx--;
+    if(dragIdx!==dropIdx){
+      const [item]=arr.splice(dragIdx,1);
+      arr.splice(dropIdx,0,item);
+      renderFn();recalc();
+    }
+    clearIndicators();
+    dragIdx=null;
+  });
+}
+
 function renderFoh(){
-  document.getElementById('foh-rows').innerHTML=fohRows.map((r,i)=>`
-    <div class="cols c-foh">
-      <button class="del-btn" onclick="fohRows.splice(${i},1);renderFoh();recalc()">×</button>
-      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="fohRows[${i}].on=this.checked;recalc()"><span class="tsl"></span></label>
+  const c=document.getElementById('foh-rows');
+  c.innerHTML=fohRows.map((r,i)=>`
+    <div class="cols c-foh${r.on?'':' off'}" draggable="true" data-idx="${i}">
+      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="fohRows[${i}].on=this.checked;renderFoh();recalc()"><span class="tsl"></span></label>
       <input class="ri left" type="text" value="${r.name}" oninput="fohRows[${i}].name=this.value" style="font-size:13px;">
       <input class="ri" type="number" value="${r.rate}" oninput="fohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
       <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
       ${makeSel(r.unit,`fohRows[${i}].unit=this.value;renderFoh();recalc()`)}
-      <div class="rt" id="foh-amt-${i}">—</div>
+      <div class="rt-wrap"><div class="rt" id="foh-amt-${i}">—</div><button class="del-btn" onclick="fohRows.splice(${i},1);renderFoh();recalc()">×</button></div>
     </div>`).join('');
 }
 
 function renderOh(){
-  document.getElementById('oh-rows').innerHTML=ohRows.map((r,i)=>`
-    <div class="cols c-oh">
-      <button class="del-btn" onclick="ohRows.splice(${i},1);renderOh();recalc()">×</button>
+  const c=document.getElementById('oh-rows');
+  c.innerHTML=ohRows.map((r,i)=>`
+    <div class="cols c-foh${r.on?'':' off'}" draggable="true" data-idx="${i}">
+      <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="ohRows[${i}].on=this.checked;renderOh();recalc()"><span class="tsl"></span></label>
       <input class="ri left" type="text" value="${r.name}" oninput="ohRows[${i}].name=this.value" style="font-size:13px;">
       <input class="ri" type="number" value="${r.rate}" oninput="ohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
       <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="ohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
       ${makeSel(r.unit,`ohRows[${i}].unit=this.value;renderOh();recalc()`)}
-      <div class="rt" id="oh-amt-${i}">—</div>
-    </div>`).join('');
-}
-
-function renderAddon(){
-  document.getElementById('addon-rows').innerHTML=addonRows.map((r,i)=>`
-    <div class="cols c-oh">
-      <button class="del-btn" onclick="addonRows.splice(${i},1);renderAddon();recalcAddon()">×</button>
-      <input class="ri left" type="text" value="${r.name}" oninput="addonRows[${i}].name=this.value" style="font-size:13px;">
-      <input class="ri" type="number" value="${r.rate}" oninput="addonRows[${i}].rate=parseFloat(this.value)||0;recalcAddon()">
-      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="addonRows[${i}].qty=parseFloat(this.value)||0;recalcAddon()" ${r.unit==='flat fee'?'disabled':''}>
-      ${makeSel(r.unit,`addonRows[${i}].unit=this.value;renderAddon();recalcAddon()`)}
-      <div class="rt" id="addon-amt-${i}">—</div>
+      <div class="rt-wrap"><div class="rt" id="oh-amt-${i}">—</div><button class="del-btn" onclick="ohRows.splice(${i},1);renderOh();recalc()">×</button></div>
     </div>`).join('');
 }
 
 function addFohRow(){fohRows.push({name:'',rate:3000,qty:1,unit:'week',on:true});renderFoh();recalc();}
-function addOhRow(){ohRows.push({name:'',rate:500,qty:1,unit:'month'});renderOh();recalc();}
-function addAddonRow(){addonRows.push({name:'',rate:3000,qty:1,unit:'week'});renderAddon();recalcAddon();}
+function addOhRow(){ohRows.push({name:'',rate:500,qty:1,unit:'month',on:true});renderOh();recalc();}
 
 function calcFoh(){return fohRows.reduce((s,r)=>s+(r.on?lineTotal(r.rate,r.qty,r.unit):0),0);}
-function calcOh(){return ohRows.reduce((s,r)=>s+lineTotal(r.rate,r.qty,r.unit),0);}
+function calcOh(){return ohRows.reduce((s,r)=>s+(r.on?lineTotal(r.rate,r.qty,r.unit):0),0);}
 
 function recalc(){
-  const projectWeeks=tier==='v01'?4:6;
-  const pP=parseFloat(document.getElementById('pct-profit').value)||0;
-  const pC=parseFloat(document.getElementById('pct-comp').value)||0;
+  const pv=parsePv(document.getElementById('cv'));
+  const pP=(parseFloat(document.getElementById('pct-profit').value)||0)/100;
+  const pC=(parseFloat(document.getElementById('pct-comp').value)||0)/100;
+  const taxR=(parseFloat(document.getElementById('tax-rate').value)||0)/100;
+
+  const aP=pv*pP;
+  const tax=pv*taxR;
+  const aC=pv*pC;
+  const bohSubtotal=aP+tax+aC;
   const teamCost=calcFoh();
   const ohCost=calcOh();
-  const teamPct=100-pP-pC;
-  const pv=teamPct>0?(teamCost+ohCost)/(teamPct/100):0;
-
-  const aP=pv*pP/100;
-  const aC=pv*pC/100;
-  const bohSubtotal=aP+aC;
 
   document.getElementById('amt-profit').textContent=fmt(aP);
+  document.getElementById('amt-tax').textContent=fmt(tax);
   document.getElementById('amt-comp').textContent=fmt(aC);
   document.getElementById('boh-subtotal').textContent=fmt(bohSubtotal);
 
@@ -337,107 +409,106 @@ function recalc(){
 
   ohRows.forEach((r,i)=>{
     const el=document.getElementById('oh-amt-'+i);
-    if(el) el.textContent=fmt(lineTotal(r.rate,r.qty,r.unit));
+    if(el) el.textContent=r.on?fmt(lineTotal(r.rate,r.qty,r.unit)):'—';
   });
   document.getElementById('oh-subtotal').textContent=fmt(ohCost);
 
-  const allocated=aP+aC+ohCost+teamCost;
+  const allocated=aP+tax+aC+ohCost+teamCost;
   const rawNet=pv-allocated;
 
-  const taxR=(parseFloat(document.getElementById('tax-rate').value)||0)/100;
-  const taxableBase=aC+aP+Math.max(0,rawNet);
-  const tax=taxableBase*taxR;
-  document.getElementById('amt-tax').textContent=fmt(tax);
-
-  const takehome=aC-aC*taxR;
-
-  document.getElementById('cv').textContent=fmt(pv);
-  document.getElementById('cw').textContent=projectWeeks+' weeks';
-  document.getElementById('ct').textContent=fmt(takehome);
-  document.getElementById('cr').textContent=(ownerWks>0?fmt(takehome/ownerWks):fmt(0))+'/week net';
+  // Top metrics
+  document.getElementById('ct-tax').textContent=fmt(tax);
+  document.getElementById('ct-tax-detail').textContent=pctS(taxR*100)+' of value';
 
   const nel=document.getElementById('cn');
   nel.textContent=fmtS(rawNet);
   nel.className='mv'+(rawNet<-1?' danger':' ok');
   document.getElementById('cnp').textContent=(pv>0?pctS(rawNet/pv*100):'0%')+' of value';
 
-  const tot=pv||1;
+  // Section % tags
+  const isOver=rawNet<-1;
+  document.getElementById('boh-pct').textContent=pv>0?pctS(bohSubtotal/pv*100):'—';
+  document.getElementById('oh-pct').textContent=pv>0?pctS(ohCost/pv*100):'—';
+  document.getElementById('foh-pct').textContent=pv>0?pctS(teamCost/pv*100):'—';
+  document.getElementById('boh-pct').classList.toggle('over',isOver);
+  document.getElementById('oh-pct').classList.toggle('over',isOver);
+  document.getElementById('foh-pct').classList.toggle('over',isOver);
+
+  // Bar chart — use allocated as base if over budget so segments shrink proportionally
+  const overage=Math.max(0,-rawNet);
+  const tot=Math.max(pv,allocated)||1;
+  document.getElementById('bx').style.width=pctS(tax/tot*100);
   document.getElementById('bp').style.width=pctS(aP/tot*100);
   document.getElementById('bc').style.width=pctS(aC/tot*100);
   document.getElementById('bo').style.width=pctS(ohCost/tot*100);
   document.getElementById('bt').style.width=pctS(teamCost/tot*100);
+  document.getElementById('bover').style.width=pctS(overage/tot*100);
+  document.getElementById('bover-leg').style.display=overage>0?'flex':'none';
 
   document.getElementById('warn-split').classList.toggle('show',teamCost>pv*0.5);
   document.getElementById('warn-net').classList.toggle('show',rawNet<-1);
 
-  recalcAddon(pv);
+  saveState();
 }
 
-function recalcAddon(pv){
-  if(!document.getElementById('en-addon').checked) return;
-  let t=0;
-  addonRows.forEach((r,i)=>{
-    const amt=lineTotal(r.rate,r.qty,r.unit);
-    t+=amt;
-    const el=document.getElementById('addon-amt-'+i);
-    if(el) el.textContent=fmt(amt);
-  });
-  document.getElementById('addon-total').textContent=fmt(t);
-  document.getElementById('addon-lbl').textContent=fmt(t);
-  const base=pv||0;
-  document.getElementById('addon-combined').textContent=fmt(base+t);
+// --- URL state persistence ---
+function getState(){
+  return {
+    n:document.getElementById('proj-name').value,
+    v:parsePv(document.getElementById('cv')),
+    p:parseFloat(document.getElementById('pct-profit').value)||0,
+    t:parseFloat(document.getElementById('tax-rate').value)||0,
+    c:parseFloat(document.getElementById('pct-comp').value)||0,
+    f:fohRows.map(r=>({n:r.name,r:r.rate,q:r.qty,u:r.unit,o:r.on?1:0})),
+    o:ohRows.map(r=>({n:r.name,r:r.rate,q:r.qty,u:r.unit,o:r.on?1:0}))
+  };
 }
 
-function toggleAddon(){
-  const on=document.getElementById('en-addon').checked;
-  document.getElementById('addon-body').style.display=on?'block':'none';
-  document.getElementById('addon-lbl').textContent=on?'':'off';
-  if(on) recalcAddon();
+function saveState(){
+  try{
+    const json=JSON.stringify(getState());
+    const encoded=btoa(unescape(encodeURIComponent(json)));
+    history.replaceState(null,'','#'+encoded);
+  }catch(e){}
 }
 
-const DEFAULTS={
-  v01:{
-    foh:[
-      {name:'Brand',rate:3000,qty:2,unit:'week',on:true},
-      {name:'Product',rate:3000,qty:1,unit:'week',on:true},
-      {name:'Research',rate:3000,qty:2,unit:'week',on:true},
-      {name:'Engineering',rate:4000,qty:0,unit:'week',on:false},
-      {name:'Support',rate:500,qty:2,unit:'week',on:true},
-    ],
-    oh:[
-      {name:'Software & tools',rate:200,qty:1,unit:'month'},
-      {name:'Admin support',rate:500,qty:1,unit:'flat fee'},
-    ]
-  },
-  v10:{
-    foh:[
-      {name:'Brand',rate:3000,qty:2,unit:'week',on:true},
-      {name:'Product',rate:3000,qty:6,unit:'week',on:true},
-      {name:'Research',rate:3000,qty:2,unit:'week',on:true},
-      {name:'Engineering',rate:4000,qty:6,unit:'week',on:true},
-      {name:'Support',rate:500,qty:6,unit:'week',on:true},
-    ],
-    oh:[
-      {name:'Software & tools',rate:200,qty:1,unit:'month'},
-      {name:'Admin support',rate:500,qty:1,unit:'flat fee'},
-    ]
-  }
-};
-
-function setTier(t){
-  tier=t;
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='v01')||(i===1&&t==='v10')));
-  fohRows=JSON.parse(JSON.stringify(DEFAULTS[t].foh));
-  ohRows=JSON.parse(JSON.stringify(DEFAULTS[t].oh));
-  renderFoh();renderOh();recalc();
+function loadState(){
+  const hash=location.hash.slice(1);
+  if(!hash) return false;
+  try{
+    const json=decodeURIComponent(escape(atob(hash)));
+    const s=JSON.parse(json);
+    if(s.n) document.getElementById('proj-name').value=s.n;
+    document.getElementById('cv').value=(s.v||0).toLocaleString();
+    document.getElementById('pct-profit').value=s.p||5;
+    document.getElementById('tax-rate').value=s.t||27;
+    document.getElementById('pct-comp').value=s.c||40;
+    if(s.f) fohRows=s.f.map(r=>({name:r.n,rate:r.r,qty:r.q,unit:r.u,on:!!r.o}));
+    if(s.o) ohRows=s.o.map(r=>({name:r.n,rate:r.r,qty:r.q,unit:r.u,on:r.o!==undefined?!!r.o:true}));
+    return true;
+  }catch(e){return false;}
 }
 
-addonRows=[
-  {name:'Engineering',rate:4000,qty:4,unit:'week'},
-  {name:'Product (handoff)',rate:3000,qty:1,unit:'week'},
+// --- Init ---
+const DEFAULT_FOH=[
+  {name:'Brand',rate:3000,qty:2,unit:'week',on:true},
+  {name:'Product',rate:3000,qty:1,unit:'week',on:true},
+  {name:'Research',rate:3000,qty:2,unit:'week',on:true},
+  {name:'Engineering',rate:4000,qty:0,unit:'week',on:false},
+  {name:'Support',rate:500,qty:2,unit:'week',on:true},
+];
+const DEFAULT_OH=[
+  {name:'Software & tools',rate:200,qty:1,unit:'month',on:true},
+  {name:'Admin support',rate:500,qty:1,unit:'flat fee',on:true},
 ];
 
-setTier('v01');
+if(!loadState()){
+  fohRows=JSON.parse(JSON.stringify(DEFAULT_FOH));
+  ohRows=JSON.parse(JSON.stringify(DEFAULT_OH));
+}
+renderFoh();renderOh();recalc();
+setupDrag(document.getElementById('foh-rows'),fohRows,renderFoh);
+setupDrag(document.getElementById('oh-rows'),ohRows,renderOh);
 </script>
 </body>
 </html>
