@@ -43,6 +43,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 }
 
 .outer{max-width:780px;margin:0 auto;padding:1rem 1.5rem 220px;}
+.url-bar{display:flex;gap:6px;margin-bottom:1.25rem;align-items:center;}
+.url-input{flex:1;padding:6px 10px;font-size:12px;font-family:monospace;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);outline:none;text-overflow:ellipsis;}
+.url-input:focus{border-color:var(--color-border-primary);color:var(--color-text-primary);}
+.copy-btn{padding:6px 12px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-secondary);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.copy-btn:hover{border-color:var(--color-border-primary);color:var(--color-text-primary);}
+.copy-btn.copied{color:var(--color-text-success);border-color:var(--color-text-success);}
 
 .sticky-bottom{position:fixed;bottom:0;left:0;right:0;background:var(--color-background-tertiary);padding:1.25rem 1.5rem;z-index:10;border-top:0.5px solid var(--color-border-tertiary);}
 .sticky-bottom .g3{max-width:780px;margin:0 auto;}
@@ -156,6 +162,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </head>
 <body>
 <div class="outer">
+<div class="url-bar">
+  <input class="url-input" id="url-field" type="text" readonly onclick="this.select()">
+  <button class="copy-btn" id="copy-btn" onclick="copyUrl()">Copy URL</button>
+</div>
 <div class="sticky-bottom">
   <div class="proj-name-wrap"><input class="proj-name" id="proj-name" type="text" value="Untitled Project" oninput="onProjName()"><span class="proj-saved" id="proj-saved">&#10003; Project title updated</span></div>
   <div class="g3">
@@ -520,7 +530,20 @@ function saveState(){
     const json=JSON.stringify(getState());
     const encoded=btoa(unescape(encodeURIComponent(json)));
     history.replaceState(null,'','#'+encoded);
+    const uf=document.getElementById('url-field');
+    if(uf) uf.value=location.href;
   }catch(e){}
+}
+
+function copyUrl(){
+  const uf=document.getElementById('url-field');
+  uf.select();
+  navigator.clipboard.writeText(uf.value).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy URL';btn.classList.remove('copied');},1500);
+  });
 }
 
 function loadState(){
