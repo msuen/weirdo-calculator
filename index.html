@@ -118,12 +118,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stl{font-size:13px;font-weight:500;color:var(--color-text-primary);}
 .sta{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:right;min-width:80px;}
 
+.card-body{overflow:hidden;transition:opacity .2s,max-height .3s ease;}
+.card-body.empty{max-height:0;opacity:0;}
+.card:hover .card-body.empty{max-height:200px;opacity:1;}
+
 .ghost-row{cursor:pointer;}
 .ghost-cell{padding:4px 0;border-bottom:1px dashed transparent;transition:border-bottom-color .15s;font-size:13px;line-height:normal;}
 .ghost-cell::after{content:'\00a0';}
 .ghost-label{color:transparent;font-size:13px;padding:4px 0;border-bottom:1px dashed transparent;transition:color .15s,border-bottom-color .15s;}
 .ghost-row:hover .ghost-label{color:var(--color-text-tertiary);border-bottom-color:var(--color-border-secondary);}
 .ghost-row:hover .ghost-cell{border-bottom-color:var(--color-border-secondary);}
+
+.row-detail{display:contents;}
+.mob-field{display:contents;}
+.mob-field-label{display:none;}
+.mob-del{display:none;}
+.add-btn-mob{display:none;}
 
 .warn{font-size:12px;color:var(--color-text-danger);margin-top:8px;display:none;}
 .warn.show{display:block;}
@@ -141,21 +151,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .ml{font-size:11px;}
   .ms{font-size:10px;}
   .card{padding:1rem;margin-bottom:1rem;}
-  .c-oh{grid-template-columns:1fr 70px 44px 66px 60px;}
-  .c-foh{grid-template-columns:28px 1fr 70px 44px 66px 60px;}
-  .rh,.rn,.ri,.rt,.rsel{font-size:13px;}
-  .ri{padding:4px 6px;}
-  .rsel{padding:4px 8px 4px 4px;}
   .subtot-row{margin-top:12px;}
   .stl,.sta{font-size:13px;}
-}
 
-@media (max-width:400px){
-  .c-oh{grid-template-columns:1fr 60px 38px 56px 52px;}
-  .c-foh{grid-template-columns:24px 1fr 60px 38px 56px 52px;}
-  .toggle{width:24px;height:14px;}
-  .tsl:before{width:8px;height:8px;}
-  .toggle input:checked+.tsl:before{transform:translateX(10px);}
+  /* Collapsed mobile grid: name + total only */
+  .c-foh{grid-template-columns:28px 1fr auto;}
+  .c-oh{grid-template-columns:1fr auto;}
+
+  /* Back of house: hide % input and spacer divs on mobile */
+  .c-oh .ri:not(.left):not(.readonly){display:none;}
+  .c-oh>div:empty{display:none;}
+
+  /* Total stays on first row */
+  .rt-wrap{min-width:70px;}
+
+  /* Detail row: hidden by default, vertical stack on expand */
+  .row-detail{display:none;grid-column:1/-1;padding:8px 0 4px;order:99;}
+  .cols.expanded .row-detail{display:block;}
+
+  /* Labeled detail fields */
+  .mob-field{display:block;margin-bottom:8px;}
+  .mob-field-label{display:block;font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px;}
+  .row-detail .ri,.row-detail .rsel{font-size:14px;}
+
+  /* Mobile delete button in detail row */
+  .mob-del{display:flex;width:100%;height:32px;align-items:center;justify-content:center;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-tertiary);font-size:12px;cursor:pointer;margin-top:4px;}
+  .mob-del:hover{color:var(--color-text-danger);border-color:var(--color-border-danger);}
+
+  /* Hide desktop hover delete on mobile */
+  .rt-wrap .del-btn{display:none!important;}
+  .cols:hover .rt-wrap .rt{transform:none;}
+
+  /* Hide rate/qty/unit column headers */
+  .mob-hide{display:none;}
+
+  /* Ghost row: hide on mobile entirely */
+  .ghost-row{display:none!important;}
+
+  /* Mobile add button: visible on mobile only */
+  .add-btn-mob{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--color-text-secondary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 12px;cursor:pointer;background:transparent;margin-top:8px;width:100%;transition:all .15s;}
+  .add-btn-mob:hover{border-color:var(--color-border-primary);color:var(--color-text-primary);}
 }
 
 </style>
@@ -197,8 +232,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card-title">Back of house <span class="pct-tag" id="boh-pct">—</span></div>
   <div class="cols c-oh" style="margin-bottom:4px;">
     <div class="rh">Item</div>
-    <div class="rh">% of value</div>
-    <div class="rh"></div><div class="rh"></div>
+    <div class="rh mob-hide">% of value</div>
+    <div class="rh mob-hide"></div><div class="rh mob-hide"></div>
     <div class="rh right">Total</div>
   </div>
   <div class="cols c-oh">
@@ -228,19 +263,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="card">
   <div class="card-title">Back of house (expenses) <span class="pct-tag" id="oh-pct">—</span></div>
-  <div class="cols c-foh" style="margin-bottom:4px;">
-    <div></div>
-    <div class="rh">Item</div>
-    <div class="rh">Rate</div>
-    <div class="rh">Qty</div>
-    <div class="rh">Unit</div>
-    <div class="rh right">Total</div>
-  </div>
-  <div id="oh-rows"></div>
-  <div class="cols c-foh ghost-row" onclick="addOhRow()">
-    <div></div>
-    <div class="ghost-label">+ Add new row</div>
-    <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
+  <div class="card-body" id="oh-body">
+    <div class="cols c-foh" style="margin-bottom:4px;">
+      <div></div>
+      <div class="rh">Item</div>
+      <div class="rh mob-hide">Rate</div>
+      <div class="rh mob-hide">Qty</div>
+      <div class="rh mob-hide">Unit</div>
+      <div class="rh right">Total</div>
+    </div>
+    <div id="oh-rows"></div>
+    <div class="cols c-foh ghost-row" onclick="addOhRow()">
+      <div></div>
+      <div class="ghost-label">+ Add new row</div>
+      <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
+    </div>
+    <button class="add-btn-mob" onclick="addOhRow()">+ Add item</button>
   </div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
@@ -250,19 +288,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="card">
   <div class="card-title">Front of house (contractors) <span class="pct-tag" id="foh-pct">—</span></div>
-  <div class="cols c-foh" style="margin-bottom:4px;">
-    <div></div>
-    <div class="rh">Role / item</div>
-    <div class="rh">Rate</div>
-    <div class="rh">Qty</div>
-    <div class="rh">Unit</div>
-    <div class="rh right">Total</div>
-  </div>
-  <div id="foh-rows"></div>
-  <div class="cols c-foh ghost-row" onclick="addFohRow()">
-    <div></div>
-    <div class="ghost-label">+ Add new row</div>
-    <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
+  <div class="card-body" id="foh-body">
+    <div class="cols c-foh" style="margin-bottom:4px;">
+      <div></div>
+      <div class="rh">Role / item</div>
+      <div class="rh mob-hide">Rate</div>
+      <div class="rh mob-hide">Qty</div>
+      <div class="rh mob-hide">Unit</div>
+      <div class="rh right">Total</div>
+    </div>
+    <div id="foh-rows"></div>
+    <div class="cols c-foh ghost-row" onclick="addFohRow()">
+      <div></div>
+      <div class="ghost-label">+ Add new row</div>
+      <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
+    </div>
+    <button class="add-btn-mob" onclick="addFohRow()">+ Add item</button>
   </div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
@@ -274,19 +315,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="card">
   <div class="card-title">Front of house (expenses) <span class="pct-tag" id="fohexp-pct">—</span></div>
-  <div class="cols c-foh" style="margin-bottom:4px;">
-    <div></div>
-    <div class="rh">Item</div>
-    <div class="rh">Rate</div>
-    <div class="rh">Qty</div>
-    <div class="rh">Unit</div>
-    <div class="rh right">Total</div>
-  </div>
-  <div id="fohexp-rows"></div>
-  <div class="cols c-foh ghost-row" onclick="addFohExpRow()">
-    <div></div>
-    <div class="ghost-label">+ Add new row</div>
-    <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
+  <div class="card-body" id="fohexp-body">
+    <div class="cols c-foh" style="margin-bottom:4px;">
+      <div></div>
+      <div class="rh">Item</div>
+      <div class="rh mob-hide">Rate</div>
+      <div class="rh mob-hide">Qty</div>
+      <div class="rh mob-hide">Unit</div>
+      <div class="rh right">Total</div>
+    </div>
+    <div id="fohexp-rows"></div>
+    <div class="cols c-foh ghost-row" onclick="addFohExpRow()">
+      <div></div>
+      <div class="ghost-label">+ Add new row</div>
+      <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
+    </div>
+    <button class="add-btn-mob" onclick="addFohExpRow()">+ Add item</button>
   </div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
@@ -390,11 +434,15 @@ function renderFoh(){
     <div class="cols c-foh${r.on?'':' off'}" draggable="true" data-idx="${i}">
       <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="fohRows[${i}].on=this.checked;renderFoh();recalc()"><span class="tsl"></span></label>
       <input class="ri left" type="text" value="${r.name}" oninput="fohRows[${i}].name=this.value" style="font-size:13px;">
-      <input class="ri" type="number" value="${r.rate}" oninput="fohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
-      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
-      ${makeSel(r.unit,`fohRows[${i}].unit=this.value;renderFoh();recalc()`)}
+      <div class="row-detail">
+        <div class="mob-field"><div class="mob-field-label">Rate</div><input class="ri" type="number" value="${r.rate}" oninput="fohRows[${i}].rate=parseFloat(this.value)||0;recalc()"></div>
+        <div class="mob-field"><div class="mob-field-label">Qty</div><input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}></div>
+        <div class="mob-field"><div class="mob-field-label">Unit</div>${makeSel(r.unit,`fohRows[${i}].unit=this.value;renderFoh();recalc()`)}</div>
+        <button class="mob-del" onclick="fohRows.splice(${i},1);renderFoh();recalc()">Remove</button>
+      </div>
       <div class="rt-wrap"><div class="rt" id="foh-amt-${i}">—</div><button class="del-btn" onclick="fohRows.splice(${i},1);renderFoh();recalc()">×</button></div>
     </div>`).join('');
+  document.getElementById('foh-body').classList.toggle('empty',fohRows.length===0);
 }
 
 function renderOh(){
@@ -403,11 +451,15 @@ function renderOh(){
     <div class="cols c-foh${r.on?'':' off'}" draggable="true" data-idx="${i}">
       <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="ohRows[${i}].on=this.checked;renderOh();recalc()"><span class="tsl"></span></label>
       <input class="ri left" type="text" value="${r.name}" oninput="ohRows[${i}].name=this.value" style="font-size:13px;">
-      <input class="ri" type="number" value="${r.rate}" oninput="ohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
-      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="ohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
-      ${makeSel(r.unit,`ohRows[${i}].unit=this.value;renderOh();recalc()`)}
+      <div class="row-detail">
+        <div class="mob-field"><div class="mob-field-label">Rate</div><input class="ri" type="number" value="${r.rate}" oninput="ohRows[${i}].rate=parseFloat(this.value)||0;recalc()"></div>
+        <div class="mob-field"><div class="mob-field-label">Qty</div><input class="ri" type="number" value="${r.qty}" step="0.5" oninput="ohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}></div>
+        <div class="mob-field"><div class="mob-field-label">Unit</div>${makeSel(r.unit,`ohRows[${i}].unit=this.value;renderOh();recalc()`)}</div>
+        <button class="mob-del" onclick="ohRows.splice(${i},1);renderOh();recalc()">Remove</button>
+      </div>
       <div class="rt-wrap"><div class="rt" id="oh-amt-${i}">—</div><button class="del-btn" onclick="ohRows.splice(${i},1);renderOh();recalc()">×</button></div>
     </div>`).join('');
+  document.getElementById('oh-body').classList.toggle('empty',ohRows.length===0);
 }
 
 function renderFohExp(){
@@ -416,11 +468,15 @@ function renderFohExp(){
     <div class="cols c-foh${r.on?'':' off'}" draggable="true" data-idx="${i}">
       <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="fohExpRows[${i}].on=this.checked;renderFohExp();recalc()"><span class="tsl"></span></label>
       <input class="ri left" type="text" value="${r.name}" oninput="fohExpRows[${i}].name=this.value" style="font-size:13px;">
-      <input class="ri" type="number" value="${r.rate}" oninput="fohExpRows[${i}].rate=parseFloat(this.value)||0;recalc()">
-      <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohExpRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
-      ${makeSel(r.unit,`fohExpRows[${i}].unit=this.value;renderFohExp();recalc()`)}
+      <div class="row-detail">
+        <div class="mob-field"><div class="mob-field-label">Rate</div><input class="ri" type="number" value="${r.rate}" oninput="fohExpRows[${i}].rate=parseFloat(this.value)||0;recalc()"></div>
+        <div class="mob-field"><div class="mob-field-label">Qty</div><input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohExpRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}></div>
+        <div class="mob-field"><div class="mob-field-label">Unit</div>${makeSel(r.unit,`fohExpRows[${i}].unit=this.value;renderFohExp();recalc()`)}</div>
+        <button class="mob-del" onclick="fohExpRows.splice(${i},1);renderFohExp();recalc()">Remove</button>
+      </div>
       <div class="rt-wrap"><div class="rt" id="fohexp-amt-${i}">—</div><button class="del-btn" onclick="fohExpRows.splice(${i},1);renderFohExp();recalc()">×</button></div>
     </div>`).join('');
+  document.getElementById('fohexp-body').classList.toggle('empty',fohExpRows.length===0);
 }
 
 function addFohRow(){fohRows.push({name:'',rate:3000,qty:1,unit:'week',on:true});renderFoh();recalc();}
@@ -587,6 +643,15 @@ renderFoh();renderOh();renderFohExp();recalc();
 setupDrag(document.getElementById('foh-rows'),fohRows,renderFoh);
 setupDrag(document.getElementById('oh-rows'),ohRows,renderOh);
 setupDrag(document.getElementById('fohexp-rows'),fohExpRows,renderFohExp);
+
+// Mobile tap to expand/collapse rows
+document.addEventListener('click',function(e){
+  if(window.innerWidth>600) return;
+  const row=e.target.closest('.cols[draggable]');
+  if(!row) return;
+  if(e.target.closest('.toggle')||e.target.closest('.del-btn')||e.target.closest('.mob-del')||e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
+  row.classList.toggle('expanded');
+});
 </script>
 </body>
 </html>
