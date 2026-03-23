@@ -90,7 +90,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ri:disabled{opacity:.35;cursor:not-allowed;}
 .ri.readonly{border-bottom-style:solid;border-bottom-color:var(--color-border-tertiary);color:var(--color-text-secondary);}
 .rsel{width:100%;padding:4px 10px 4px 0;font-size:12px;border:none;border-bottom:1px dashed var(--color-border-secondary);border-radius:0;background:transparent;color:var(--color-text-primary);-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239b9b96'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;cursor:pointer;}
-.rt{font-size:13px;color:var(--color-text-secondary);text-align:right;padding:4px 0;border-bottom:1px dashed var(--color-border-tertiary);}
+.rt{font-size:13px;color:var(--color-text-secondary);text-align:right;padding:4px 0;border-bottom:1px dashed var(--color-border-tertiary);width:100%;}
 .rh{font-size:11px;color:var(--color-text-tertiary);}
 .rh.right{text-align:right;}
 
@@ -113,8 +113,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sta{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:right;min-width:80px;}
 
 .ghost-row{cursor:pointer;}
-.ghost-row .ghost-label{color:transparent;font-size:13px;padding:4px 0;border-bottom:1px dashed var(--color-border-tertiary);transition:color .15s;}
-.ghost-row:hover .ghost-label{color:var(--color-text-tertiary);}
+.ghost-cell{padding:4px 0;border-bottom:1px dashed transparent;transition:border-bottom-color .15s;font-size:13px;line-height:normal;}
+.ghost-cell::after{content:'\00a0';}
+.ghost-label{color:transparent;font-size:13px;padding:4px 0;border-bottom:1px dashed transparent;transition:color .15s,border-bottom-color .15s;}
+.ghost-row:hover .ghost-label{color:var(--color-text-tertiary);border-bottom-color:var(--color-border-secondary);}
+.ghost-row:hover .ghost-cell{border-bottom-color:var(--color-border-secondary);}
 
 .warn{font-size:12px;color:var(--color-text-danger);margin-top:8px;display:none;}
 .warn.show{display:block;}
@@ -227,7 +230,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="cols c-foh ghost-row" onclick="addOhRow()">
     <div></div>
     <div class="ghost-label">+ Add new row</div>
-    <div></div><div></div><div></div><div></div>
+    <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
   </div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
@@ -249,7 +252,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="cols c-foh ghost-row" onclick="addFohRow()">
     <div></div>
     <div class="ghost-label">+ Add new row</div>
-    <div></div><div></div><div></div><div></div>
+    <div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div><div class="ghost-cell"></div>
   </div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
