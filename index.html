@@ -7,7 +7,7 @@
 <title>Weirdo Pricing Calculator</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--color-background-tertiary);color:var(--color-text-primary);padding:0;}
 
 :root{
   --color-background-primary:#ffffff;
@@ -63,14 +63,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:12px;}
 .card-title{font-size:11px;font-weight:500;letter-spacing:.08em;color:var(--color-text-tertiary);text-transform:uppercase;margin-bottom:12px;}
 
-.cols{display:grid;gap:6px;align-items:center;margin-bottom:6px;}
-.c-foh{grid-template-columns:28px 1fr 88px 58px 80px 80px 28px;}
-.c-oh{grid-template-columns:1fr 88px 58px 80px 80px 28px;}
+.cols{display:grid;gap:6px;align-items:center;margin-bottom:6px;position:relative;}
+.c-foh{grid-template-columns:28px 1fr 88px 58px 80px 80px;}
+.c-oh{grid-template-columns:1fr 88px 58px 80px 80px;}
 
 .rn{font-size:13px;color:var(--color-text-primary);}
-.ri{width:100%;padding:5px 8px;font-size:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);text-align:right;}
+.ri{width:100%;padding:5px 8px;font-size:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
 .ri:focus{outline:none;border-color:var(--color-border-primary);}
-.ri.left{text-align:left;}
 .ri:disabled{opacity:.35;cursor:not-allowed;}
 .rsel{width:100%;padding:5px 6px;font-size:12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
 .rt{font-size:13px;color:var(--color-text-secondary);text-align:right;}
@@ -84,10 +83,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tsl:before{content:'';position:absolute;width:10px;height:10px;left:3px;top:3px;background:var(--color-background-primary);border-radius:50%;transition:.2s;}
 .toggle input:checked+.tsl:before{transform:translateX(12px);}
 
-.del-btn{width:22px;height:22px;border:0.5px solid var(--color-border-tertiary);border-radius:4px;background:transparent;cursor:pointer;color:var(--color-text-tertiary);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;line-height:1;padding:0;}
+.del-btn{width:22px;height:22px;border:0.5px solid var(--color-border-tertiary);border-radius:4px;background:transparent;cursor:pointer;color:var(--color-text-tertiary);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;line-height:1;padding:0;opacity:0;pointer-events:none;position:absolute;left:-30px;top:50%;transform:translateY(-50%);}
+.cols:hover .del-btn{opacity:1;pointer-events:auto;}
 .del-btn:hover{border-color:var(--color-border-danger);color:var(--color-text-danger);}
 
-.subtot-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 2px;border-top:0.5px solid var(--color-border-tertiary);margin-top:6px;}
+.subtot-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0 2px;border-top:0.5px solid var(--color-border-tertiary);margin-top:16px;}
 .stl{font-size:13px;font-weight:500;color:var(--color-text-primary);}
 .sta{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:right;min-width:80px;}
 
@@ -139,26 +139,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card-title">Back of house</div>
   <div class="cols c-oh" style="margin-bottom:4px;">
     <div class="rh">Item</div>
-    <div class="rh right">% of value</div>
+    <div class="rh">% of value</div>
     <div class="rh"></div><div class="rh"></div>
     <div class="rh right">Total</div>
-    <div></div>
   </div>
   <div class="cols c-oh">
     <div class="rn">Net profit</div>
     <input class="ri" id="pct-profit" type="number" value="5" min="0" max="50" oninput="recalc()">
     <div></div><div></div>
     <div class="rt" id="amt-profit">—</div>
-    <div></div>
   </div>
   <div class="cols c-oh">
     <div class="rn">Owner comp</div>
     <input class="ri" id="pct-comp" type="number" value="40" min="0" max="80" oninput="recalc()">
     <div></div><div></div>
     <div class="rt" id="amt-comp">—</div>
-    <div></div>
   </div>
-  <div style="font-size:11px;color:var(--color-text-tertiary);margin:-2px 0 6px;text-align:right;padding-right:34px;" id="comp-detail">—</div>
+  <div style="font-size:11px;color:var(--color-text-tertiary);margin:-2px 0 6px;text-align:right;" id="comp-detail">—</div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
     <span class="sta" id="boh-subtotal">—</span>
@@ -169,11 +166,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card-title">Back of house — overhead</div>
   <div class="cols c-oh" style="margin-bottom:4px;">
     <div class="rh">Item</div>
-    <div class="rh right">Rate</div>
-    <div class="rh right">Qty</div>
+    <div class="rh">Rate</div>
+    <div class="rh">Qty</div>
     <div class="rh">Unit</div>
     <div class="rh right">Total</div>
-    <div></div>
   </div>
   <div id="oh-rows"></div>
   <button class="add-btn" onclick="addOhRow()">+ add overhead item</button>
@@ -188,11 +184,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="cols c-foh" style="margin-bottom:4px;">
     <div></div>
     <div class="rh">Role / item</div>
-    <div class="rh right">Rate</div>
-    <div class="rh right">Qty</div>
+    <div class="rh">Rate</div>
+    <div class="rh">Qty</div>
     <div class="rh">Unit</div>
     <div class="rh right">Total</div>
-    <div></div>
   </div>
   <div id="foh-rows"></div>
   <button class="add-btn" onclick="addFohRow()">+ add line item</button>
@@ -215,11 +210,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="addon-body" style="display:none;margin-top:1rem;">
     <div class="cols c-oh" style="margin-bottom:4px;">
       <div class="rh">Role / item</div>
-      <div class="rh right">Rate</div>
-      <div class="rh right">Qty</div>
+      <div class="rh">Rate</div>
+      <div class="rh">Qty</div>
       <div class="rh">Unit</div>
       <div class="rh right">Total</div>
-      <div></div>
     </div>
     <div id="addon-rows"></div>
     <button class="add-btn" onclick="addAddonRow()">+ add line item</button>
@@ -240,19 +234,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card-title">Tax</div>
   <div class="cols c-oh" style="margin-bottom:4px;">
     <div class="rh">Item</div>
-    <div class="rh right">Rate</div>
+    <div class="rh">Rate</div>
     <div class="rh"></div><div class="rh"></div>
     <div class="rh right">Total</div>
-    <div></div>
   </div>
   <div class="cols c-oh">
     <div class="rn">Tax rate</div>
     <input class="ri" id="tax-rate" type="number" value="27" min="0" max="60" oninput="recalc()">
     <div></div><div></div>
     <div class="rt" id="amt-tax">—</div>
-    <div></div>
   </div>
-  <div style="font-size:11px;color:var(--color-text-tertiary);margin:2px 0 6px;text-align:right;padding-right:34px;">applied to owner comp + net profit + positive project net</div>
+  <div style="font-size:11px;color:var(--color-text-tertiary);margin:2px 0 6px;text-align:right;">applied to owner comp + net profit + positive project net</div>
 </div>
 </div>
 
@@ -276,37 +268,37 @@ function makeSel(val,onchange){
 function renderFoh(){
   document.getElementById('foh-rows').innerHTML=fohRows.map((r,i)=>`
     <div class="cols c-foh">
+      <button class="del-btn" onclick="fohRows.splice(${i},1);renderFoh();recalc()">×</button>
       <label class="toggle"><input type="checkbox" ${r.on?'checked':''} onchange="fohRows[${i}].on=this.checked;recalc()"><span class="tsl"></span></label>
       <input class="ri left" type="text" value="${r.name}" oninput="fohRows[${i}].name=this.value" style="font-size:13px;">
       <input class="ri" type="number" value="${r.rate}" oninput="fohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
       <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="fohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
       ${makeSel(r.unit,`fohRows[${i}].unit=this.value;renderFoh();recalc()`)}
       <div class="rt" id="foh-amt-${i}">—</div>
-      <button class="del-btn" onclick="fohRows.splice(${i},1);renderFoh();recalc()">×</button>
     </div>`).join('');
 }
 
 function renderOh(){
   document.getElementById('oh-rows').innerHTML=ohRows.map((r,i)=>`
     <div class="cols c-oh">
+      <button class="del-btn" onclick="ohRows.splice(${i},1);renderOh();recalc()">×</button>
       <input class="ri left" type="text" value="${r.name}" oninput="ohRows[${i}].name=this.value" style="font-size:13px;">
       <input class="ri" type="number" value="${r.rate}" oninput="ohRows[${i}].rate=parseFloat(this.value)||0;recalc()">
       <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="ohRows[${i}].qty=parseFloat(this.value)||0;recalc()" ${r.unit==='flat fee'?'disabled':''}>
       ${makeSel(r.unit,`ohRows[${i}].unit=this.value;renderOh();recalc()`)}
       <div class="rt" id="oh-amt-${i}">—</div>
-      <button class="del-btn" onclick="ohRows.splice(${i},1);renderOh();recalc()">×</button>
     </div>`).join('');
 }
 
 function renderAddon(){
   document.getElementById('addon-rows').innerHTML=addonRows.map((r,i)=>`
     <div class="cols c-oh">
+      <button class="del-btn" onclick="addonRows.splice(${i},1);renderAddon();recalcAddon()">×</button>
       <input class="ri left" type="text" value="${r.name}" oninput="addonRows[${i}].name=this.value" style="font-size:13px;">
       <input class="ri" type="number" value="${r.rate}" oninput="addonRows[${i}].rate=parseFloat(this.value)||0;recalcAddon()">
       <input class="ri" type="number" value="${r.qty}" step="0.5" oninput="addonRows[${i}].qty=parseFloat(this.value)||0;recalcAddon()" ${r.unit==='flat fee'?'disabled':''}>
       ${makeSel(r.unit,`addonRows[${i}].unit=this.value;renderAddon();recalcAddon()`)}
       <div class="rt" id="addon-amt-${i}">—</div>
-      <button class="del-btn" onclick="addonRows.splice(${i},1);renderAddon();recalcAddon()">×</button>
     </div>`).join('');
 }
 
