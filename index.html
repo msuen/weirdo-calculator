@@ -254,7 +254,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div></div><div></div>
     <div class="rt" id="amt-comp">—</div>
   </div>
-  <div style="font-size:11px;color:var(--color-text-tertiary);margin:-2px 0 6px;text-align:right;" id="comp-detail">—</div>
   <div class="subtot-row">
     <span class="stl">Subtotal</span>
     <span class="sta" id="boh-subtotal">—</span>
@@ -344,7 +343,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 const fmt=v=>'$'+Math.round(Math.abs(v)).toLocaleString();
 const fmtS=v=>(v<0?'-':'')+fmt(v);
 const pctS=v=>Math.round(v)+'%';
-const OWNER_RATE=5000;
 const UNITS=['hour','day','week','month','flat fee'];
 
 function parsePv(el){return parseFloat(el.value.replace(/[^0-9.]/g,''))||0;}
@@ -506,8 +504,6 @@ function recalc(){
   document.getElementById('amt-comp').textContent=fmt(aC);
   document.getElementById('boh-subtotal').textContent=fmt(bohSubtotal);
 
-  const ownerWks=aC/OWNER_RATE;
-  document.getElementById('comp-detail').textContent=ownerWks.toFixed(1)+' wks @ $'+OWNER_RATE.toLocaleString()+'/wk';
 
   fohRows.forEach((r,i)=>{
     const el=document.getElementById('foh-amt-'+i);
